@@ -1,10 +1,11 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { columns, Payment } from "@/components/home/columns";
+import Contact from "@/components/home/contact-form";
+import { DataTable } from "@/components/home/data-table";
 
-export default function Home() {
+export default async function DemoPage() {
   return (
-    <div>
-      <Button>Click me</Button>
+    <div className="container mx-auto py-10">
+      <Contact />
     </div>
   );
 }
