@@ -87,7 +87,7 @@ const Contact = () => {
                   errors.region ? "border-red-500" : "border-[#454545]"
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
               >
-                <option value="">Select...</option>
+                <option value="">Rigion</option>
                 <option value="A">Option A</option>
                 <option value="B">Option B</option>
               </select>{" "}
@@ -104,7 +104,7 @@ const Contact = () => {
                   errors.state ? "border-red-500" : "border-[#454545]"
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
               >
-                <option value="">Select...</option>
+                <option value="">State</option>
                 <option value="A">Option A</option>
                 <option value="B">Option B</option>
               </select>{" "}
@@ -121,7 +121,7 @@ const Contact = () => {
                   errors.city ? "border-red-500" : "border-[#454545]"
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
               >
-                <option value="">Select...</option>
+                <option value="">City</option>
                 <option value="A">Option A</option>
                 <option value="B">Option B</option>
               </select>{" "}
@@ -154,7 +154,7 @@ const Contact = () => {
           </div>
         </form>
       </div>
-      <DataTable columns={columns} data={data ? data : []} />
+      {data.length > 0 && <DataTable columns={columns} data={data} />}
     </div>
   );
 };
