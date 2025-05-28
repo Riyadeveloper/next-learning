@@ -1,25 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 export type Payment = {
   name: string;
   address: string;
-  region: string;
+  country: string;
   state: string;
   city: string;
-  zipcode: number;
-  phoneNumber: number;
+  zipcode: string;
+  phoneNumber: string;
   email: string;
 };
 
@@ -27,6 +19,22 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "name",
     header: "Name",
+  },
+  {
+    accessorKey: "state",
+    header: "State",
+  },
+  {
+    accessorKey: "country",
+    header: "Country",
+  },
+  {
+    accessorKey: "city",
+    header: "City",
+  },
+  {
+    accessorKey: "zipcode",
+    header: "Zipcode",
   },
   {
     accessorKey: "email",

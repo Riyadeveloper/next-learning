@@ -1,23 +1,114 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+
+// Types
+type Country = { iso2: string; name: string };
+type State = { iso2: string; name: string };
+type City = { id: number; name: string };
+type CountryCode = keyof typeof dummyStates;
+type StateCode = keyof typeof dummyCities;
+
+type FormData = {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  country: string;
+  state: string;
+  city: string;
+  zipcode: string;
+};
+
+// Dummy data arrays
+const dummyCountries: Country[] = [
+  { iso2: "US", name: "United States" },
+  { iso2: "CA", name: "Canada" },
+  { iso2: "IN", name: "India" },
+];
+
+const dummyStates: Record<string, State[]> = {
+  US: [
+    { iso2: "NY", name: "New York" },
+    { iso2: "CA", name: "California" },
+  ],
+  CA: [
+    { iso2: "ON", name: "Ontario" },
+    { iso2: "BC", name: "British Columbia" },
+  ],
+  IN: [
+    { iso2: "MH", name: "Maharashtra" },
+    { iso2: "DL", name: "Delhi" },
+  ],
+};
+
+const dummyCities: Record<string, City[]> = {
+  NY: [
+    { id: 1, name: "New York City" },
+    { id: 2, name: "Buffalo" },
+  ],
+  CA: [
+    { id: 3, name: "Los Angeles" },
+    { id: 4, name: "San Francisco" },
+  ],
+  ON: [
+    { id: 5, name: "Toronto" },
+    { id: 6, name: "Ottawa" },
+  ],
+  BC: [
+    { id: 7, name: "Vancouver" },
+    { id: 8, name: "Victoria" },
+  ],
+  MH: [
+    { id: 9, name: "Mumbai" },
+    { id: 10, name: "Pune" },
+  ],
+  DL: [{ id: 11, name: "New Delhi" }],
+};
+
 const Contact = () => {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<FormData[]>([]);
+  const [countries] = useState<Country[]>(dummyCountries);
+  const [states, setStates] = useState<State[]>([]);
+  const [cities, setCities] = useState<City[]>([]);
 
-  const onSubmit = (formData: any) => {
+  const selectedCountry = watch("country") as CountryCode | undefined;
+  const selectedState = watch("state") as StateCode | undefined;
+
+  useEffect(() => {
+    if (selectedCountry && dummyStates[selectedCountry]) {
+      setStates(dummyStates[selectedCountry]);
+    } else {
+      setStates([]);
+    }
+    setCities([]);
+  }, [selectedCountry]);
+
+  useEffect(() => {
+    if (selectedState && dummyCities[selectedState]) {
+      setCities(dummyCities[selectedState]);
+    } else {
+      setCities([]);
+    }
+  }, [selectedState]);
+
+  const onSubmit = (formData: FormData) => {
     setData((prev) => [...prev, formData]);
+    reset();
   };
-  console.log(data);
+
   return (
     <div>
       <div className="max-w-[700px] mx-auto pb-16">
@@ -31,7 +122,7 @@ const Contact = () => {
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
                 {...register("name", { required: true })}
                 placeholder="Name"
-              />{" "}
+              />
               {errors.name && (
                 <span className="pt-1 text-red-500">
                   This field is required
@@ -45,7 +136,7 @@ const Contact = () => {
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
                 {...register("email", { required: true })}
                 placeholder="Email"
-              />{" "}
+              />
               {errors.email && (
                 <span className="pt-1 text-red-500">
                   This field is required
@@ -59,7 +150,7 @@ const Contact = () => {
                 } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
                 {...register("phoneNumber", { required: true })}
                 placeholder="Phone Number"
-              />{" "}
+              />
               {errors.phoneNumber && (
                 <span className="pt-1 text-red-500">
                   This field is required
@@ -82,16 +173,19 @@ const Contact = () => {
             </div>
             <div>
               <select
-                {...register("region", { required: true })}
+                {...register("country", { required: true })}
                 className={`border ${
-                  errors.region ? "border-red-500" : "border-[#454545]"
-                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
+                  errors.country ? "border-red-500" : "border-[#454545]"
+                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
               >
-                <option value="">Rigion</option>
-                <option value="A">Option A</option>
-                <option value="B">Option B</option>
-              </select>{" "}
-              {errors.region && (
+                <option value="">Country</option>
+                {countries.map((country) => (
+                  <option key={country.iso2} value={country.iso2}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
+              {errors.country && (
                 <span className="pt-1 text-red-500">
                   This field is required
                 </span>
@@ -102,12 +196,15 @@ const Contact = () => {
                 {...register("state", { required: true })}
                 className={`border ${
                   errors.state ? "border-red-500" : "border-[#454545]"
-                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
+                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
               >
                 <option value="">State</option>
-                <option value="A">Option A</option>
-                <option value="B">Option B</option>
-              </select>{" "}
+                {states.map((state) => (
+                  <option key={state.iso2} value={state.iso2}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
               {errors.state && (
                 <span className="pt-1 text-red-500">
                   This field is required
@@ -119,12 +216,15 @@ const Contact = () => {
                 {...register("city", { required: true })}
                 className={`border ${
                   errors.city ? "border-red-500" : "border-[#454545]"
-                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal `}
+                } w-full rounded-[10px] p-3 sm:text-sm text-xs font-normal`}
               >
                 <option value="">City</option>
-                <option value="A">Option A</option>
-                <option value="B">Option B</option>
-              </select>{" "}
+                {cities.map((city) => (
+                  <option key={city.id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
               {errors.city && (
                 <span className="pt-1 text-red-500">
                   This field is required
@@ -154,7 +254,10 @@ const Contact = () => {
           </div>
         </form>
       </div>
-      {data.length > 0 && <DataTable columns={columns} data={data} />}
+
+      <div className="max-w-[1200px] mx-auto">
+        {data.length > 0 && <DataTable columns={columns} data={data} />}
+      </div>
     </div>
   );
 };
